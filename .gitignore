@@ -1,0 +1,11 @@
+node_modules
+dist
+*.local
+.idea
+yarn-error.log
+env.local.json
+env.*.local.json
+*.log
+.pnpm-store/
+.temp
+.history

@@ -1,0 +1,14 @@
+{
+  "name": "code-standard",
+  "devDependencies": {
+    "lerna": "^6.6.2"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "release:lerna": "lerna version --exact --no-git-tag-version"
+  },
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ]
+}

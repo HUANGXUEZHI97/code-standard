@@ -1,0 +1,7 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "应用规范检测工具",
+  "main": "index.js",
+  "license": "ISC"
+}
