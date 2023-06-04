@@ -1,11 +1,12 @@
 {
   "name": "code-standard",
-  "devDependencies": {
-    "lerna": "^6.6.2"
-  },
+  "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "release:lerna": "lerna version --exact --no-git-tag-version"
+  },
+  "devDependencies": {
+    "lerna": "^6.6.2"
   },
   "license": "MIT",
   "workspaces": [

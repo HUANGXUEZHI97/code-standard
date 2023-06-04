@@ -3,5 +3,14 @@
   "version": "1.0.0",
   "description": "应用规范检测工具",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.4"
+  },
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "commander": "^10.0.1",
+    "inquirer": "^9.2.7",
+    "lodash": "^4.17.21"
+  }
 }
