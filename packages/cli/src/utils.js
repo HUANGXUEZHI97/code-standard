@@ -152,7 +152,7 @@ function print(level, ...args) {
   return fn(printPrefix[level] + ' ', ...args);
 }
 
-function install(deps, options = {}) {
+async function install(deps, options = {}) {
 
 }
 

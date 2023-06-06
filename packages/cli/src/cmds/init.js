@@ -1,4 +1,3 @@
-const process = require('process');
 const fs = require('fs');
 const path = require('path');
 const inquirer = require('inquirer').default;
@@ -25,7 +24,6 @@ const {
  *   gerritSupport: boolean
  *   gerritHost: string
  * }} Config
- *
  * @typedef {{
  *   pkg: pkg,
  *   addDep: addDep,
@@ -36,10 +34,47 @@ const {
  * }} Context
  */
 
+
+/**
+ * @param {Context} ctx
+ */
 function pre(ctx) {
   if (!isGitRepo(ctx.cwd)) {
+    print('Error', '请在Git项目内使用该命令');
+    process.exit();
+  }
+}
+
+/**
+ * @param {Context} ctx
+ */
+function husky(ctx) {
+  const { pkg } = ctx;
+
+  if (pkg.get('husky')) {
 
   }
+}
+
+/**
+ * @param {Context} ctx
+ */
+function eslint(ctx) {
+
+}
+
+/**
+ * @param {Context} ctx
+ */
+function prettier(ctx) {
+
+}
+
+/**
+ * @param {Context} ctx
+ */
+function configuration(ctx) {
+
 }
 
 /**
