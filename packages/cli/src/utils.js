@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { Chalk } = require('chalk');
 const { log, warn, error } = require('console');
-const { get, set } = require('lodash');
+const { get, set, unset } = require('lodash');
+const { execaCommandSync } = require('execa');
 const pkg = require('../package.json');
 
 const chalk = new Chalk();
@@ -22,7 +23,18 @@ const chalk = new Chalk();
  */
 
 const _DEV_ = process.env.NODE_ENV === 'development';
+/**
+ * 是否为 CI 环境
+ */
+const IS_CI = !!(
+  process.env.JENKINS_URL ||
+  process.env.GITLAB_CI ||
+  process.env.GITHUB_ACTIONS ||
+  process.env.CIRCLECI ||
+  process.env.TRAVIS
+);
 
+const COMMAND_NAME = 'wkstd';
 const CONFIGURE_NAME = '.standard.jsonc';
 
 /**
@@ -51,6 +63,25 @@ class Pkg {
       delete this.obj.devDependencies[name];
       this.dirty = true;
     }
+  }
+
+  /**
+   * 移除字段
+   * @param {string} identifier
+   */
+  unset(identifier) {
+    if (unset(this.obj, identifier)) {
+      this.dirty = true;
+    }
+  }
+
+  /**
+   * 添加 script
+   * @param {string} name
+   * @param {string} command
+   */
+  setScript(name, command) {
+    this.set(`scripts.${name}`, command);
   }
 
   /**
@@ -152,6 +183,21 @@ function print(level, ...args) {
   return fn(printPrefix[level] + ' ', ...args);
 }
 
+/**
+ * @param {string} command
+ * @param {{cwd?: string}} options
+ */
+function execNpmScript(command, options = {}) {
+  print('Debug', command);
+  return execaCommandSync(command, { preferLocal: true, cwd: options.cwd || process.cwd(), stdio: 'inherit' });
+}
+
+
+/**
+ * 安装依赖
+ * @param {Dep[]} deps
+ * @param {{ignoreScripts?: boolean}} options
+ */
 async function install(deps, options = {}) {
 
 }
@@ -162,5 +208,8 @@ export {
   print,
   Pkg,
   isGitRepo,
-  install
+  install,
+  COMMAND_NAME,
+  IS_CI,
+  execNpmScript
 }
