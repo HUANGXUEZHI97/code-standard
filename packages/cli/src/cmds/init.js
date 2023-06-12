@@ -1,15 +1,17 @@
-const process = require('process');
 const fs = require('fs');
 const path = require('path');
-const inquirer = require('inquirer').default;
+const inquirer = require('inquirer');
 
 const {
   CONFIGURE_NAME,
   print,
   Pkg,
   isGitRepo,
-  install
+  install,
+  COMMAND_NAME,
+  execNpmScript
 } = require('../utils')
+const installGerritCommitMsgHook = require('./install-gerrit-commit-msg');
 
 /**
  * @typedef {import('../utils').Dep} Dep
@@ -25,7 +27,6 @@ const {
  *   gerritSupport: boolean
  *   gerritHost: string
  * }} Config
- *
  * @typedef {{
  *   pkg: pkg,
  *   addDep: addDep,
@@ -36,10 +37,95 @@ const {
  * }} Context
  */
 
+
+/**
+ * @param {Context} ctx
+ */
 function pre(ctx) {
   if (!isGitRepo(ctx.cwd)) {
-
+    print('Error', '请在Git项目内使用该命令');
+    process.exit(1);
   }
+}
+
+/**
+ * @param {Context} ctx
+ */
+async function husky(ctx) {
+  print('Info', '正在初始化 husky');
+
+  const { config, pkg, addDep, onFinish, cwd } = ctx;
+  const COMMAND = `${COMMAND_NAME} local-check`;
+
+  //移除旧的 husky配置，增加script命令
+  pkg.unset('husky');
+  pkg.setScript('local-check', COMMAND);
+  pkg.setScript('prepare', 'husky install');
+
+  // 安装或更新 husky
+  addDep({ name: 'husky', dev: true });
+
+  const huskyHooksDir = path.join(cwd, '.husky');
+  const preCommitFiles = path.join(huskyHooksDir, 'pre-commit');
+  if (!huskyHooksDir) {
+    await fs.promises.mkdir(huskyHooksDir, { recursive: true });
+  }
+
+  // pre-commit hooks
+  await fs.promises.writeFile(
+    preCommitFiles,
+    `#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npm run local-check`
+  );
+
+  await fs.promises.chmod(preCommitFiles, '755');
+
+  // Gerrit COMMIT MSG 命令
+  if (config.gerritSupport) {
+    await installGerritCommitMsgHook(config.gerritHost);
+  }
+
+  // 移除旧的 gerrit 安装命令
+  const postinstall = pkg.get('scripts.postinstall');
+  if (postinstall && postinstall.includes(COMMAND_NAME)) {
+    pkg.unset('scripts.postinstall');
+  }
+
+  onFinish(async () => {
+    try {
+      await execNpmScript('husky install');
+      const preCommitFiles = (await fs.promises.readFile(path.join(cwd, '.git/config'))).toString();
+      if (!(await preCommitFiles).includes('.husky')) {
+        print('Error', '请手动执行 `npx husky install`');
+      }
+    } catch (error) {
+      print('Error', '请手动执行 `npx husky install`', error.message);
+    }
+  })
+}
+
+/**
+ * @param {Context} ctx
+ */
+function eslint(ctx) {
+  print('Info', '正在初始化 eslint');
+  const { pkg, cwd, config, addDep } = ctx;
+}
+
+/**
+ * @param {Context} ctx
+ */
+function prettier(ctx) {
+
+}
+
+/**
+ * @param {Context} ctx
+ */
+function configuration(ctx) {
+
 }
 
 /**
@@ -58,7 +144,7 @@ async function getOptions(pkg, cwd) {
         ? 'react'
         : 'standard';
 
-  const answers = await inquirer.prompt([
+  const answers = await inquirer.default.prompt([
     {
       type: 'confirm',
       name: 'typescript',

@@ -4,13 +4,20 @@
   "description": "应用规范检测工具",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "prepare": "husky install"
+  },
   "engines": {
     "node": ">=12.4"
   },
   "dependencies": {
     "chalk": "^5.2.0",
     "commander": "^10.0.1",
+    "execa": "^7.1.1",
     "inquirer": "^9.2.7",
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3"
   }
 }
