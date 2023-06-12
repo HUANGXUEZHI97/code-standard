@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { Chalk } = require('chalk');
+const chalk = require('chalk');
 const { log, warn, error } = require('console');
 const { get, set, unset } = require('lodash');
-const { execaCommandSync } = require('execa');
+const execa = require('execa');
 const pkg = require('../package.json');
-
-const chalk = new Chalk();
 
 /**
  * @typedef {{name: string, version?: string, dev: boolean}} Dep
@@ -189,7 +187,7 @@ function print(level, ...args) {
  */
 function execNpmScript(command, options = {}) {
   print('Debug', command);
-  return execaCommandSync(command, { preferLocal: true, cwd: options.cwd || process.cwd(), stdio: 'inherit' });
+  return execa.commandSync(command, { preferLocal: true, cwd: options.cwd || process.cwd(), stdio: 'inherit' });
 }
 
 
@@ -202,7 +200,7 @@ async function install(deps, options = {}) {
 
 }
 
-export {
+module.exports = {
   pkg,
   CONFIGURE_NAME,
   print,

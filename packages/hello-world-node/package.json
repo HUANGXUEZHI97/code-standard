@@ -1,0 +1,9 @@
+{
+  "name": "hello-world-node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "cli": "^1.0.0"
+  }
+}

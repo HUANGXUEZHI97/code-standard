@@ -144,7 +144,7 @@ async function getOptions(pkg, cwd) {
         ? 'react'
         : 'standard';
 
-  const answers = await inquirer.default.prompt([
+  const answers = await inquirer.prompt([
     {
       type: 'confirm',
       name: 'typescript',

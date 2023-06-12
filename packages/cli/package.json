@@ -10,11 +10,16 @@
   "engines": {
     "node": ">=12.4"
   },
+  "bin": "./bin/cli.js",
+  "files": [
+    "bin/*",
+    "src/**/*"
+  ],
   "dependencies": {
-    "chalk": "^5.2.0",
+    "chalk": "4.1.0",
     "commander": "^10.0.1",
-    "execa": "^7.1.1",
-    "inquirer": "^9.2.7",
+    "execa": "4.0.3",
+    "inquirer": "7.3.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
